@@ -7,19 +7,185 @@
 //
 
 import UIKit
+import CoreBluetooth
 
-class ViewController: UIViewController {
+let TRANSFER_SERVICE_UUID:String = "FB694B90-F49E-4597-8306-171BBA78F846"
+let TRANSFER_CHARACTERISTIC_UUID:String = "EB6727C4-F184-497A-A656-76B0CDAC633A"
+
+class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
+    
+    var centralManager:CBCentralManager!;
+    var discoveredPeripheral:CBPeripheral!;
+    
+    var receiveData:NSMutableData?;// 接收到的数据
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        self.centralManager = CBCentralManager();
+        self.centralManager.delegate = self;
+        
+        
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated);
+        
+        self.centralManager.stopScan();
+        
+        NSLog("停止浏览", "");
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    /// CBCentralManagerDelegate
+    func centralManagerDidUpdateState(central: CBCentralManager) {
+        
+        if central.state != CBCentralManagerState.PoweredOn {
+            return;
+        }
+        
+        self.centralManager.scanForPeripheralsWithServices(nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey : true]);
+        
+        NSLog("开始浏览", "");
+    }
+    
+    func centralManager(central: CBCentralManager, willRestoreState dict: [String : AnyObject]) {
+        
+    }
+    
+    /// 发现外设
+    func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
+        NSLog("发现: %@   %@", peripheral.name as String!, RSSI);
+        
+        if self.discoveredPeripheral != peripheral {
+            self.discoveredPeripheral = peripheral;
+            
+            NSLog("Connecting to peripheral: %@", peripheral);// 开始执行连接
+            self.centralManager.connectPeripheral(peripheral, options: nil);
+        }
+    }
+    
+    /// 连接成功！
+    func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
+        NSLog("Connected!", "");
+        
+        self.centralManager.stopScan();
+        
+        self.receiveData?.length = 0;
+        
+        peripheral.delegate = self;
+        
+        peripheral.discoverServices([CBUUID(string: TRANSFER_SERVICE_UUID)]);
+    }
+    
+    func centralManager(central: CBCentralManager, didFailToConnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+        NSLog("连接失败！", "");
+        
+        self.cleanup();
+    }
+    
+    func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+        NSLog("didDisconnectPeripheral: %@", peripheral.name!);
+        self.discoveredPeripheral = nil;
+        
+        self.centralManager.scanForPeripheralsWithServices(nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey : true]);
+    }
+    
+    func cleanup() {
+        NSLog("cleanup!", "");
+        
+        if self.discoveredPeripheral.services != nil {
+            
+            for service in self.discoveredPeripheral.services! {
+                
+                if service.characteristics != nil {
+                    for characteristic in service.characteristics! {
+                        if characteristic.UUID == CBUUID(string: TRANSFER_SERVICE_UUID) {
+                            if characteristic.isNotifying {
+                                self.discoveredPeripheral.setNotifyValue(false, forCharacteristic: characteristic);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        self.centralManager.cancelPeripheralConnection(self.discoveredPeripheral);
+    }
+    
+    /// CBPeripheralDelegate
+    func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
+        NSLog("didDiscoverServices: %@", peripheral.name!);
+        
+        if error != nil || peripheral.services == nil {
+            self.cleanup();
+            return;
+        }
+        
+        for service in peripheral.services! {// 发现自定义特征
+            peripheral.discoverCharacteristics([CBUUID(string: TRANSFER_CHARACTERISTIC_UUID)], forService: service);
+        }
+        
+        // other
+    }
+    
+    func peripheral(peripheral: CBPeripheral, didDiscoverCharacteristicsForService service: CBService, error: NSError?) {
+        NSLog("didDiscoverCharacteristicsForService: %@", peripheral.name!);
+        
+        if error != nil || service.characteristics == nil {
+            self.cleanup();
+            return;
+        }
+        
+        for characteristic in service.characteristics! {
+            
+            if characteristic.UUID == CBUUID(string: TRANSFER_CHARACTERISTIC_UUID) {
+                peripheral.setNotifyValue(true, forCharacteristic: characteristic);
+            }
+        }
+    }
+    
+    func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
+        
+        NSLog("didUpdateValueForCharacteristic: %@", peripheral.name!);
+        if discoveredPeripheral?.services != nil {
+            
+            for service in self.discoveredPeripheral.services! {
+                if service.characteristics != nil {
+                    for characteristic in service.characteristics! {
+                        if characteristic.UUID == CBUUID(string: TRANSFER_CHARACTERISTIC_UUID) {
+                            if characteristic.isNotifying {
+                                self.discoveredPeripheral.setNotifyValue(false, forCharacteristic: characteristic);
+                            }
+                        }
+                    }
+                }
+                
+            }
+        }
+        
+        self.centralManager.cancelPeripheralConnection(self.discoveredPeripheral);
+    }
+    
+    func peripheral(peripheral: CBPeripheral, didUpdateNotificationStateForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
+        NSLog("didUpdateNotificationStateForCharacteristic: %@", peripheral.name!);
+        
+        if characteristic.UUID != CBUUID(string: TRANSFER_CHARACTERISTIC_UUID) {
+            
+            return;
+        }
+        
+        if characteristic.isNotifying {
+            NSLog("Notification began on %@", characteristic);
+        }else{// 取消外设连接
+            self.centralManager.cancelPeripheralConnection(peripheral);
+        }
+        
+    }
 
 }
 

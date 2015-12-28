@@ -12,6 +12,7 @@
 		7E43BC2B1C31396600779932 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7E43BC291C31396600779932 /* Main.storyboard */; };
 		7E43BC2D1C31396600779932 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7E43BC2C1C31396600779932 /* Assets.xcassets */; };
 		7E43BC301C31396600779932 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7E43BC2E1C31396600779932 /* LaunchScreen.storyboard */; };
+		7E43BC381C31462A00779932 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E43BC371C31462A00779932 /* MainViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		7E43BC2C1C31396600779932 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7E43BC2F1C31396600779932 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7E43BC311C31396600779932 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7E43BC371C31462A00779932 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				7E43BC251C31396600779932 /* AppDelegate.swift */,
+				7E43BC371C31462A00779932 /* MainViewController.swift */,
 				7E43BC271C31396600779932 /* ViewController.swift */,
 				7E43BC291C31396600779932 /* Main.storyboard */,
 				7E43BC2C1C31396600779932 /* Assets.xcassets */,
@@ -135,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7E43BC381C31462A00779932 /* MainViewController.swift in Sources */,
 				7E43BC281C31396600779932 /* ViewController.swift in Sources */,
 				7E43BC261C31396600779932 /* AppDelegate.swift in Sources */,
 			);
@@ -249,10 +253,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: ANAN TANG (4V6QCV7679)";
 				INFOPLIST_FILE = BluetoothSample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.joinhov.BluetoothSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "ec72ff34-8fd2-49a8-be94-3c26052a3c49";
 			};
 			name = Debug;
 		};
@@ -261,9 +268,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BluetoothSample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.joinhov.BluetoothSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "ec72ff34-8fd2-49a8-be94-3c26052a3c49";
 			};
 			name = Release;
 		};
