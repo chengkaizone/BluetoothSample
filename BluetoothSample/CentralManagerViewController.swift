@@ -9,13 +9,12 @@
 import UIKit
 import CoreBluetooth
 
-let TRANSFER_SERVICE_UUID:String = "FB694B90-F49E-4597-8306-171BBA78F846"
-let TRANSFER_CHARACTERISTIC_UUID:String = "EB6727C4-F184-497A-A656-76B0CDAC633A"
-
-class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
+class CentralManagerViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
     
     var centralManager:CBCentralManager!;
     var discoveredPeripheral:CBPeripheral!;
+    
+    var textView:UITextView!;
     
     var receiveData:NSMutableData?;// 接收到的数据
 
@@ -36,11 +35,6 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         NSLog("停止浏览", "");
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     /// CBCentralManagerDelegate
     func centralManagerDidUpdateState(central: CBCentralManager) {
         

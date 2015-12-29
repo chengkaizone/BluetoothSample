@@ -14,6 +14,8 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        // self.navigationController?.navigationBarHidden = true;
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -22,14 +24,15 @@ class MainViewController: UIViewController {
     }
     
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    @IBAction func entryCentralAction(sender: AnyObject) {
+        
+        let control = UIStoryboard.initFromStoryboard(CentralManagerViewController.classForCoder());
+        self.navigationController?.pushViewController(control, animated: true);
     }
-    */
-
+    
+    @IBAction func entryPeripheralAction(sender: AnyObject) {
+        
+        let control = UIStoryboard.initFromStoryboard(PeripheralViewController.classForCoder());
+        self.navigationController?.pushViewController(control, animated: true);
+    }
 }

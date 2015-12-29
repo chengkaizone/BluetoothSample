@@ -8,22 +8,28 @@
 
 /* Begin PBXBuildFile section */
 		7E43BC261C31396600779932 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E43BC251C31396600779932 /* AppDelegate.swift */; };
-		7E43BC281C31396600779932 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E43BC271C31396600779932 /* ViewController.swift */; };
+		7E43BC281C31396600779932 /* CentralManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E43BC271C31396600779932 /* CentralManagerViewController.swift */; };
 		7E43BC2B1C31396600779932 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7E43BC291C31396600779932 /* Main.storyboard */; };
 		7E43BC2D1C31396600779932 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7E43BC2C1C31396600779932 /* Assets.xcassets */; };
 		7E43BC301C31396600779932 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7E43BC2E1C31396600779932 /* LaunchScreen.storyboard */; };
 		7E43BC381C31462A00779932 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E43BC371C31462A00779932 /* MainViewController.swift */; };
+		7E43BC3A1C3162B600779932 /* UIStoryboardExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E43BC391C3162B600779932 /* UIStoryboardExtension.swift */; };
+		7E63AC821C32593D00EE615C /* PeripheralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E63AC811C32593D00EE615C /* PeripheralViewController.swift */; };
+		7E63AC841C325ACF00EE615C /* Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E63AC831C325ACF00EE615C /* Services.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		7E43BC221C31396600779932 /* BluetoothSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluetoothSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E43BC251C31396600779932 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		7E43BC271C31396600779932 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		7E43BC271C31396600779932 /* CentralManagerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CentralManagerViewController.swift; sourceTree = "<group>"; };
 		7E43BC2A1C31396600779932 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7E43BC2C1C31396600779932 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7E43BC2F1C31396600779932 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7E43BC311C31396600779932 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7E43BC371C31462A00779932 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		7E43BC391C3162B600779932 /* UIStoryboardExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIStoryboardExtension.swift; sourceTree = "<group>"; };
+		7E63AC811C32593D00EE615C /* PeripheralViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeripheralViewController.swift; sourceTree = "<group>"; };
+		7E63AC831C325ACF00EE615C /* Services.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Services.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,9 +64,12 @@
 			children = (
 				7E43BC251C31396600779932 /* AppDelegate.swift */,
 				7E43BC371C31462A00779932 /* MainViewController.swift */,
-				7E43BC271C31396600779932 /* ViewController.swift */,
-				7E43BC291C31396600779932 /* Main.storyboard */,
+				7E43BC271C31396600779932 /* CentralManagerViewController.swift */,
+				7E63AC811C32593D00EE615C /* PeripheralViewController.swift */,
+				7E43BC391C3162B600779932 /* UIStoryboardExtension.swift */,
+				7E63AC831C325ACF00EE615C /* Services.swift */,
 				7E43BC2C1C31396600779932 /* Assets.xcassets */,
+				7E43BC291C31396600779932 /* Main.storyboard */,
 				7E43BC2E1C31396600779932 /* LaunchScreen.storyboard */,
 				7E43BC311C31396600779932 /* Info.plist */,
 			);
@@ -138,8 +147,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7E63AC821C32593D00EE615C /* PeripheralViewController.swift in Sources */,
+				7E63AC841C325ACF00EE615C /* Services.swift in Sources */,
 				7E43BC381C31462A00779932 /* MainViewController.swift in Sources */,
-				7E43BC281C31396600779932 /* ViewController.swift in Sources */,
+				7E43BC281C31396600779932 /* CentralManagerViewController.swift in Sources */,
+				7E43BC3A1C3162B600779932 /* UIStoryboardExtension.swift in Sources */,
 				7E43BC261C31396600779932 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -295,6 +307,7 @@
 				7E43BC361C31396600779932 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
