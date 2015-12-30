@@ -9,103 +9,141 @@
 import UIKit
 import CoreBluetooth
 
-/// 外设服务控制
-class PeripheralViewController: UIViewController, CBPeripheralManagerDelegate {
+/**
+ * 外设与中心的数据通信 --- 这里的使用适合给蓝牙外设终端编程。给外设安装使用
+ *
+ * 使用peripheral编程的例子也有很多，比如像用一个ipad和一个iphone通讯，ipad可以认为是central，iphone端是peripheral,这种情况下适合本示例。
+ */
+class PeripheralViewController: UIViewController {
     
-    var textView:UITextView!;
+    @IBOutlet var textView:UITextView!;
+    @IBOutlet var btSend:UIButton!;
+    
     // 外设管理
     var peripheralManager:CBPeripheralManager!;
-    // 特征
+    // 传输特征
     var transferCharacteristic:CBMutableCharacteristic!;
-    var dataToSend:NSData?;
-    var sendDataIndex:Int = 0; // 发送数据包的位置
+    
+    var data:NSData!;// 发送的数据
+    var sendOffset = 0;
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.peripheralManager = CBPeripheralManager();
-        self.peripheralManager.delegate = self;
+        let backgroundTap = UITapGestureRecognizer(target: self, action: "backgroundTap")
+        self.view.addGestureRecognizer(backgroundTap)
+        
+        
         
         /// 关联关心的服务ID
-        self.peripheralManager.startAdvertising([CBAdvertisementDataServiceUUIDsKey:CBUUID(string: TRANSFER_SERVICE_UUID)]);
+        //self.peripheralManager.startAdvertising([CBAdvertisementDataServiceUUIDsKey:CBUUID(string: TRANSFER_SERVICE_UUID)]);
         
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.peripheralManager = CBPeripheralManager(delegate: self, queue: nil);
     }
     
     override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated);
         
         self.peripheralManager.stopAdvertising();
-        
-        super.viewWillDisappear(animated);
     }
     
-    func sendData(data:NSData?) {
-        NSLog("send data!", "");
-        if data == nil {
-            return;
-        }
-        
-        var didSend = self.peripheralManager.updateValue("EOM".dataUsingEncoding(NSUTF8StringEncoding)!, forCharacteristic: self.transferCharacteristic, onSubscribedCentrals: nil);
-        if didSend { // 判断消息是否发送结束
-            return;
-        }
-        
-        if self.sendDataIndex >= data!.length {// 没有数据
-            return;
-        }
-        
-        didSend = true;
-        while(didSend) {
-            // 计算发送的数量
-            var amountToSend = data!.length - self.sendDataIndex;
-            
-            // 最大不能超过 20字节
-            if amountToSend > NOTIFY_MTU {
-                amountToSend = NOTIFY_MTU;
-            }
-            
-            // 复制我们想要的数据
-            let chunk:NSData = NSData(bytes: data!.bytes + self.sendDataIndex, length: amountToSend);
-            didSend = self.peripheralManager.updateValue(chunk, forCharacteristic: self.transferCharacteristic, onSubscribedCentrals: nil);
-            
-            if didSend == false {
-                return;
-            }
-            
-            let sendString = String(data: chunk, encoding: NSUTF8StringEncoding);
-            if sendString != nil {
-                NSLog("send: %@", sendString!);
-            }
-            
-            // 正在发送,更新index
-            self.sendDataIndex += amountToSend;
-            
-            if self.sendDataIndex >= data!.length {
-                
-                // 是否发送结束
-                let eomSend = self.peripheralManager.updateValue("EOM".dataUsingEncoding(NSUTF8StringEncoding)!, forCharacteristic: self.transferCharacteristic, onSubscribedCentrals: nil);
-                
-                if eomSend {
-                    NSLog("发送结束", "");
-                }
-                
-                return;
-            }
-            
-        }
-        
+    func backgroundTap() {
+        self.textView.resignFirstResponder()
     }
     
-    /// CBPeripheralManagerDelegate 
+    @IBAction func sendAction(sender:UIButton) {
+        let sendStr = self.textView.text;
+        
+        if sendStr == nil {
+            return;
+        }
+        
+        //sender.enabled = false;
+        self.btSend.setTitle("Sending...", forState: .Normal);
+        
+        self.peripheralManager.stopAdvertising();// 停止广播
+        
+        self.data = nil;
+        self.sendOffset = 0;
+        
+        var sendContent = [String:AnyObject]();
+        sendContent["msg"] = sendStr!;
+        // 不建议通过蓝牙传输图片数据 --- 效率不高
+        // sendContent["image"] = UIImagePNGRepresentation(UIImage());
+        // 组合数据
+        self.data = try? NSPropertyListSerialization.dataWithPropertyList(sendContent, format: NSPropertyListFormat.BinaryFormat_v1_0, options: 0);
+        
+        // 执行广播
+        self.peripheralManager.startAdvertising([CBAdvertisementDataServiceUUIDsKey:CBUUID(string: TRANSFER_SERVICE_UUID)]);
+    }
+    
+    func resetSendButton() {
+        self.btSend.setTitle("Send", forState: .Normal);
+        self.btSend.enabled = true;
+    }
+    
+    /// 发送数据出去
+    func sendData() {// 此处的操作与指针有关
+        let length = self.data.length;
+        
+        var size = BUFFER_SIZE;
+        
+        while sendOffset < length {// 循环传递数据块
+            if length - sendOffset < size {
+                size = length - sendOffset;
+            }
+            
+            // 构造数据块---传递地址，偏移量和数据长度
+            let chunk = NSData(bytes: self.data.bytes + sendOffset, length: size);
+            
+            // 广播数据出去
+            let didSend = self.peripheralManager.updateValue(chunk, forCharacteristic: self.transferCharacteristic, onSubscribedCentrals: nil);
+            if didSend {
+                print("data chunk sended, size: \(size), offset: \(sendOffset); totle: \(data.length)");
+                self.sendOffset += size;
+            }else{
+                return;
+            }
+        }
+        
+        if sendOffset == length && size == BUFFER_SIZE {// 发送结束标志
+            
+            let didSend = self.peripheralManager.updateValue(MSG_SUBFIX.dataUsingEncoding(NSUTF8StringEncoding)!, forCharacteristic: self.transferCharacteristic, onSubscribedCentrals: nil);
+            
+            if didSend {
+                print("sended end@");
+                self.sendOffset = 0;
+                self.resetSendButton();
+            } else {
+                print("sended end failed");
+            }
+        } else if sendOffset < BUFFER_SIZE {
+            print("sended finished.");
+            self.sendOffset = 0;
+            self.resetSendButton();
+        }
+    }
+    
+}
+
+extension PeripheralViewController:CBPeripheralManagerDelegate {
     
     func peripheralManagerDidUpdateState(peripheral: CBPeripheralManager) {
         if peripheral.state != CBPeripheralManagerState.PoweredOn {
             return;
         }
         
+        NSLog("PoweredOn", "");
         // 创建传输特征的UUID
         self.transferCharacteristic = CBMutableCharacteristic(type: CBUUID(string: TRANSFER_CHARACTERISTIC_UUID), properties: CBCharacteristicProperties.Notify, value: nil, permissions: CBAttributePermissions.Readable);
         // 创建传输服务
         let transferService = CBMutableService(type: CBUUID(string: TRANSFER_SERVICE_UUID), primary: true);
+        transferService.characteristics = [self.transferCharacteristic];
         
         // 添加传输服务
         self.peripheralManager.addService(transferService);
@@ -114,22 +152,23 @@ class PeripheralViewController: UIViewController, CBPeripheralManagerDelegate {
     /// 接收到订阅的特征
     func peripheralManager(peripheral: CBPeripheralManager, central: CBCentral, didSubscribeToCharacteristic characteristic: CBCharacteristic) {
         
-        let str = self.textView.text;
-        if str == nil {
-            return;
-        }
-        
-        // 转换成发送数据
-        self.dataToSend = str!.dataUsingEncoding(NSUTF8StringEncoding);
-        self.sendDataIndex = 0;
-        
-        self.sendData(self.dataToSend);
+        print("Central subscribed to characteristic: \(central.description)");
+
+        self.sendData();
     }
     
+    /// 取消订阅
+    func peripheralManager(peripheral: CBPeripheralManager, central: CBCentral, didUnsubscribeFromCharacteristic characteristic: CBCharacteristic) {
+        print("Central unsubscribed from characteristic: \(central.description)");
+        
+    }
+    
+    /// ???
     func peripheralManagerIsReadyToUpdateSubscribers(peripheral: CBPeripheralManager) {
         
-        self.sendData(self.dataToSend);
+        print("peripheralManager Is Ready To Update Subscribers");
+        
+        self.sendData();
     }
     
-
 }

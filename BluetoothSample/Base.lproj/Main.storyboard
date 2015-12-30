@@ -5,10 +5,10 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <scenes>
-        <!--Central Manager View Controller-->
+        <!--Central View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="CentralManagerViewController" id="BYZ-38-t0r" customClass="CentralManagerViewController" customModule="BluetoothSample" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CentralViewController" id="BYZ-38-t0r" customClass="CentralViewController" customModule="BluetoothSample" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -23,7 +23,7 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Receive text!" translatesAutoresizingMaskIntoConstraints="NO" id="LLG-oT-lZR">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Received text!" translatesAutoresizingMaskIntoConstraints="NO" id="LLG-oT-lZR">
                                 <rect key="frame" x="67" y="80.5" width="240" height="128"/>
                                 <color key="backgroundColor" red="0.30672303385360034" green="0.68533770483720247" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
@@ -33,20 +33,33 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YAZ-e7-HD8">
+                                <rect key="frame" x="330" y="30" width="35" height="30"/>
+                                <color key="backgroundColor" red="1" green="0.60673857099999995" blue="0.47379391669999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="reset"/>
+                                <connections>
+                                    <action selector="resetAction" destination="BYZ-38-t0r" eventType="touchUpInside" id="1hR-cy-GhP"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="LLG-oT-lZR" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="5nZ-mj-M0Z"/>
+                            <constraint firstItem="YAZ-e7-HD8" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="10" id="Rl6-e2-iCW"/>
                             <constraint firstItem="5QW-Tt-I1m" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="eyC-e8-Vn4"/>
+                            <constraint firstAttribute="trailing" secondItem="YAZ-e7-HD8" secondAttribute="trailing" constant="10" id="fYc-zH-jZo"/>
                             <constraint firstItem="LLG-oT-lZR" firstAttribute="top" secondItem="5QW-Tt-I1m" secondAttribute="bottom" constant="20" id="fhj-rk-IhX"/>
                             <constraint firstItem="5QW-Tt-I1m" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="zll-dQ-TDu"/>
                         </constraints>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <outlet property="mTextView" destination="LLG-oT-lZR" id="iYe-1f-Ap0"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="378.5" y="-2449.5"/>
+            <point key="canvasLocation" x="153.5" y="-2890.5"/>
         </scene>
         <!--Main View Controller-->
         <scene sceneID="nak-Ym-D5w">
@@ -60,14 +73,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C5g-lO-E59">
-                                <rect key="frame" x="132" y="202" width="110" height="30"/>
-                                <state key="normal" title="CentralManager"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C5g-lO-E59">
+                                <rect key="frame" x="162" y="202" width="50" height="30"/>
+                                <state key="normal" title="Central"/>
                                 <connections>
                                     <action selector="entryCentralAction:" destination="YnO-Gq-sec" eventType="touchUpInside" id="hY0-ab-bO6"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Jl-MF-Ef1">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Jl-MF-Ef1">
                                 <rect key="frame" x="152" y="271" width="70" height="30"/>
                                 <state key="normal" title="Peripheral"/>
                                 <connections>
@@ -76,13 +89,23 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="2Jl-MF-Ef1" firstAttribute="top" secondItem="C5g-lO-E59" secondAttribute="bottom" constant="39" id="B0U-pe-3YZ"/>
+                            <constraint firstItem="2Jl-MF-Ef1" firstAttribute="centerX" secondItem="5iG-WG-KfO" secondAttribute="centerX" id="GPg-6n-xxH"/>
+                            <constraint firstItem="C5g-lO-E59" firstAttribute="centerX" secondItem="5iG-WG-KfO" secondAttribute="centerX" id="MGF-oG-Scp"/>
+                            <constraint firstItem="C5g-lO-E59" firstAttribute="top" secondItem="uwQ-B5-OdB" secondAttribute="bottom" constant="138" id="sPg-fV-aPw"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="qrq-dE-52l"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <outlet property="btCentral" destination="C5g-lO-E59" id="O3u-YV-82l"/>
+                        <outlet property="btPeripheral" destination="2Jl-MF-Ef1" id="q3r-nu-eNZ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tZj-zo-5dL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-85.5" y="-1754.5"/>
+            <point key="canvasLocation" x="-243.5" y="-2045.5"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="nLm-lN-v6I">
@@ -99,7 +122,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pXz-tk-R8S" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="365.5" y="-1707.5"/>
+            <point key="canvasLocation" x="153.5" y="-2040.5"/>
         </scene>
         <!--Peripheral View Controller-->
         <scene sceneID="YyV-cR-LO5">
@@ -129,9 +152,26 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iMe-XS-XLc">
+                                <rect key="frame" x="152" y="233" width="70" height="30"/>
+                                <color key="backgroundColor" red="1" green="0.3232140691" blue="0.2038798362" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="NA4-2d-zQs"/>
+                                    <constraint firstAttribute="width" constant="70" id="j5i-T1-ucT"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Send">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="sendAction:" destination="QDp-QE-Ic9" eventType="touchUpInside" id="OhY-fe-Dg1"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="iMe-XS-XLc" firstAttribute="top" secondItem="vSn-a2-AOM" secondAttribute="bottom" constant="24" id="Acv-dO-bh7"/>
+                            <constraint firstItem="iMe-XS-XLc" firstAttribute="centerX" secondItem="OY8-wi-d4Y" secondAttribute="centerX" id="C1S-O2-9Ro"/>
                             <constraint firstItem="vSn-a2-AOM" firstAttribute="centerX" secondItem="OY8-wi-d4Y" secondAttribute="centerX" id="LYB-Lc-Ihd"/>
                             <constraint firstItem="0vC-5n-eNv" firstAttribute="centerX" secondItem="OY8-wi-d4Y" secondAttribute="centerX" id="bM6-4X-6LO"/>
                             <constraint firstItem="vSn-a2-AOM" firstAttribute="top" secondItem="0vC-5n-eNv" secondAttribute="bottom" constant="20" id="hEX-m8-w1j"/>
@@ -139,10 +179,14 @@
                         </constraints>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <outlet property="btSend" destination="iMe-XS-XLc" id="5jt-w2-U4w"/>
+                        <outlet property="textView" destination="vSn-a2-AOM" id="EPy-pM-Siv"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EjH-4E-g4f" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4.5" y="-2442.5"/>
+            <point key="canvasLocation" x="-253.5" y="-2890.5"/>
         </scene>
     </scenes>
 </document>

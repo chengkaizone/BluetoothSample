@@ -9,13 +9,18 @@
 import UIKit
 
 class MainViewController: UIViewController {
-
+    
+    @IBOutlet var btCentral:UIButton!;
+    @IBOutlet var btPeripheral:UIButton!;
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         // self.navigationController?.navigationBarHidden = true;
         
+        self.btCentral.sizeToFit();
+        self.btPeripheral.sizeToFit();
     }
 
     override func didReceiveMemoryWarning() {
@@ -26,7 +31,7 @@ class MainViewController: UIViewController {
 
     @IBAction func entryCentralAction(sender: AnyObject) {
         
-        let control = UIStoryboard.initFromStoryboard(CentralManagerViewController.classForCoder());
+        let control = UIStoryboard.initFromStoryboard(CentralViewController.classForCoder());
         self.navigationController?.pushViewController(control, animated: true);
     }
     
