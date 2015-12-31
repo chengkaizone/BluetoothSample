@@ -9,6 +9,7 @@
 import UIKit
 import CoreBluetooth
 
+
 /**
  * 外设与中心的数据通信 --- 这里的使用适合给蓝牙外设终端编程。给外设安装使用
  *
@@ -16,8 +17,8 @@ import CoreBluetooth
  */
 class PeripheralViewController: UIViewController {
     
-    @IBOutlet var textView:UITextView!;
-    @IBOutlet var btSend:UIButton!;
+    @IBOutlet weak var textView:UITextView!;
+    @IBOutlet weak var btSend:UIButton!;
     
     // 外设管理
     var peripheralManager:CBPeripheralManager!;
@@ -32,11 +33,6 @@ class PeripheralViewController: UIViewController {
 
         let backgroundTap = UITapGestureRecognizer(target: self, action: "backgroundTap")
         self.view.addGestureRecognizer(backgroundTap)
-        
-        
-        
-        /// 关联关心的服务ID
-        //self.peripheralManager.startAdvertising([CBAdvertisementDataServiceUUIDsKey:CBUUID(string: TRANSFER_SERVICE_UUID)]);
         
     }
     
@@ -78,8 +74,8 @@ class PeripheralViewController: UIViewController {
         // 组合数据
         self.data = try? NSPropertyListSerialization.dataWithPropertyList(sendContent, format: NSPropertyListFormat.BinaryFormat_v1_0, options: 0);
         
-        // 执行广播
-        self.peripheralManager.startAdvertising([CBAdvertisementDataServiceUUIDsKey:CBUUID(string: TRANSFER_SERVICE_UUID)]);
+        // 执行广播 --- 这里千万注意
+        self.peripheralManager.startAdvertising([CBAdvertisementDataServiceUUIDsKey:[CBUUID(string: Bluetooth.TRANSFER_SERVICE_UUID)]]);
     }
     
     func resetSendButton() {
@@ -91,7 +87,7 @@ class PeripheralViewController: UIViewController {
     func sendData() {// 此处的操作与指针有关
         let length = self.data.length;
         
-        var size = BUFFER_SIZE;
+        var size = Bluetooth.BUFFER_SIZE;
         
         while sendOffset < length {// 循环传递数据块
             if length - sendOffset < size {
@@ -111,18 +107,18 @@ class PeripheralViewController: UIViewController {
             }
         }
         
-        if sendOffset == length && size == BUFFER_SIZE {// 发送结束标志
+        if sendOffset == length && size == Bluetooth.BUFFER_SIZE {// 发送结束标志
             
-            let didSend = self.peripheralManager.updateValue(MSG_SUBFIX.dataUsingEncoding(NSUTF8StringEncoding)!, forCharacteristic: self.transferCharacteristic, onSubscribedCentrals: nil);
+            let didSend = self.peripheralManager.updateValue(Bluetooth.MSG_SUBFIX.dataUsingEncoding(NSUTF8StringEncoding)!, forCharacteristic: self.transferCharacteristic, onSubscribedCentrals: nil);
             
             if didSend {
-                print("sended end@");
+                print("sended end");
                 self.sendOffset = 0;
                 self.resetSendButton();
             } else {
                 print("sended end failed");
             }
-        } else if sendOffset < BUFFER_SIZE {
+        } else if sendOffset < Bluetooth.BUFFER_SIZE {
             print("sended finished.");
             self.sendOffset = 0;
             self.resetSendButton();
@@ -140,9 +136,9 @@ extension PeripheralViewController:CBPeripheralManagerDelegate {
         
         NSLog("PoweredOn", "");
         // 创建传输特征的UUID
-        self.transferCharacteristic = CBMutableCharacteristic(type: CBUUID(string: TRANSFER_CHARACTERISTIC_UUID), properties: CBCharacteristicProperties.Notify, value: nil, permissions: CBAttributePermissions.Readable);
+        self.transferCharacteristic = CBMutableCharacteristic(type: CBUUID(string: Bluetooth.TRANSFER_CHARACTERISTIC_UUID), properties: CBCharacteristicProperties.Notify, value: nil, permissions: CBAttributePermissions.Readable);
         // 创建传输服务
-        let transferService = CBMutableService(type: CBUUID(string: TRANSFER_SERVICE_UUID), primary: true);
+        let transferService = CBMutableService(type: CBUUID(string: Bluetooth.TRANSFER_SERVICE_UUID), primary: true);
         transferService.characteristics = [self.transferCharacteristic];
         
         // 添加传输服务
@@ -171,4 +167,11 @@ extension PeripheralViewController:CBPeripheralManagerDelegate {
         self.sendData();
     }
     
+    
 }
+
+
+
+
+
+
