@@ -30,6 +30,7 @@
 		7E63AC811C32593D00EE615C /* PeripheralViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeripheralViewController.swift; sourceTree = "<group>"; };
 		7E63AC831C325ACF00EE615C /* Services.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Services.swift; sourceTree = "<group>"; };
 		7E6ED2A31C33B540002A21B0 /* CentralViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CentralViewController.swift; sourceTree = "<group>"; };
+		7E7D1CE91C350A0A009EA5D1 /* Bluetooth.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Bluetooth.playground; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +63,7 @@
 		7E43BC241C31396600779932 /* BluetoothSample */ = {
 			isa = PBXGroup;
 			children = (
+				7E7D1CE91C350A0A009EA5D1 /* Bluetooth.playground */,
 				7E43BC251C31396600779932 /* AppDelegate.swift */,
 				7E43BC371C31462A00779932 /* MainViewController.swift */,
 				7E6ED2A31C33B540002A21B0 /* CentralViewController.swift */,

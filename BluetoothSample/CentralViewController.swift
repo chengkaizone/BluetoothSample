@@ -12,6 +12,7 @@ import CoreBluetooth
 
 /**
  * 中心设备与外围设备的数据通信 --- 这里的使用适合给手机设备编程。给手机类的中心使用
+ * 程序供中心设备使用
  */
 class CentralViewController: UIViewController {
     
@@ -21,6 +22,9 @@ class CentralViewController: UIViewController {
     // 关心的外设
     var discoveredPeripheral:CBPeripheral!;
     
+    // 写的特征 --- 向外发送消息
+    var writeCharacteristic:CBCharacteristic!;
+    
     var data:NSMutableData!;// 接收到的数据
     
     override func viewDidLoad() {
@@ -29,12 +33,12 @@ class CentralViewController: UIViewController {
         let backgroundTap = UITapGestureRecognizer(target: self, action: "backgroundTap")
         self.view.addGestureRecognizer(backgroundTap)
         
+        self.centralManager = CBCentralManager(delegate: self, queue: nil);
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.centralManager = CBCentralManager(delegate: self, queue: nil);
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -57,10 +61,22 @@ class CentralViewController: UIViewController {
         
         self.textView.text = "";
         self.cleanup();
-        self.startScan();
+        
     }
     
-    // 开始浏览
+    @IBAction func sendData(sender:UIButton) {
+        if self.discoveredPeripheral == nil {
+            return;
+        }
+        if self.writeCharacteristic == nil {
+            return;
+        }
+        
+        let data = String(format: "测试数据: %d", arguments:[Int(NSDate().timeIntervalSince1970)]).dataUsingEncoding(NSUTF8StringEncoding)!;
+        self.discoveredPeripheral.writeValue(data, forCharacteristic: self.writeCharacteristic, type: CBCharacteristicWriteType.WithResponse);
+    }
+    
+    // 开始查找指定服务的外围设备
     func startScan() {
         
         let serviceUUID = CBUUID(string: Bluetooth.TRANSFER_SERVICE_UUID);// 浏览能提供指定服务的外围设备
@@ -71,7 +87,7 @@ class CentralViewController: UIViewController {
         print("Scanning started");
     }
     
-    //
+    /// 取消消息订阅，断开外设
     func cleanup() {
         if self.discoveredPeripheral == nil {
             return;
@@ -85,24 +101,24 @@ class CentralViewController: UIViewController {
             
             for service in self.discoveredPeripheral.services! {
                 
-                //if service.UUID.isEqual(CBUUID(string: TRANSFER_SERVICE_UUID)) {
-                if service.characteristics != nil {
+                if service.UUID.isEqual(CBUUID(string: Bluetooth.TRANSFER_SERVICE_UUID)) {
+                    if service.characteristics != nil {
                     
-                    for characteristic in service.characteristics! {
-                        if characteristic.UUID.isEqual(CBUUID(string: Bluetooth.TRANSFER_CHARACTERISTIC_UUID)) {
-                            if characteristic.isNotifying {// 如果处于订阅中，取消订阅
-                                self.discoveredPeripheral.setNotifyValue(false, forCharacteristic: characteristic);
+                        for characteristic in service.characteristics! {
+                            if characteristic.UUID.isEqual(CBUUID(string: Bluetooth.TRANSFER_CHARACTERISTIC_UUID)) {
+                                // 只应该存在一个传输连接的对象 --- 所以提前结束
+                                if characteristic.isNotifying {// 如果处于订阅中，取消订阅
+                                    self.discoveredPeripheral.setNotifyValue(false, forCharacteristic: characteristic);
+                                    return;
+                                }
                             }
-                            //break;
                         }
                     }
                 }
-                //break;
-                //}
                 
             }
             
-            // 断开蓝牙连接
+            // 如果能走到这一步，说明不是我们订阅的蓝牙硬件，断开蓝牙连接
             self.centralManager.cancelPeripheralConnection(self.discoveredPeripheral);
         }
     }
@@ -111,28 +127,43 @@ class CentralViewController: UIViewController {
 
 extension CentralViewController:CBCentralManagerDelegate {
     
+    /// step 1
     func centralManagerDidUpdateState(central: CBCentralManager) {
         
-        if central.state != CBCentralManagerState.PoweredOn {
-            return;
+        switch(self.centralManager.state) {
+            
+        case .Unknown:
+            NSLog("蓝牙处于未知状态", "");
+            break;
+        case .Resetting:
+            NSLog("蓝牙处于充值状态", "");
+            break;
+        case .Unsupported:// 都支持蓝牙
+            break;
+        case .Unauthorized:
+            NSLog("蓝牙未授权使用", "");
+            break;
+        case .PoweredOff:
+            NSLog("请打开你的蓝牙", "");
+            break;
+        case .PoweredOn:
+            NSLog("PoweredOn", "");
+            self.startScan();
+            break;
         }
-        
-        NSLog("PoweredOn", "");
-        
-        self.startScan();
+
     }
     
-    /// 发现外设
+    /// step 2 发现外设
     func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
         
         // 这个信号是否过滤掉似乎不重要
-        //        if RSSI.integerValue < -35 || RSSI.integerValue > -15 {
-        //            return;
-        //        }
-        NSLog("didDiscoverPeripheral: %@   %@", peripheral, RSSI);
+        //if RSSI.integerValue < -35 || RSSI.integerValue > -15 {
+        //   return;
+        //}
+        NSLog("didDiscoverPeripheral: %@   %@   广播包：@", peripheral, RSSI, advertisementData);
         
         //if self.discoveredPeripheral != peripheral {
-        
         
             self.centralManager.connectPeripheral(peripheral, options: nil);
         
@@ -141,18 +172,18 @@ extension CentralViewController:CBCentralManagerDelegate {
         //}
     }
     
-    /// 连接成功！
+    /// step 3 连接成功！
     func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
         NSLog("didConnectPeripheral:%@ stop scanning", peripheral);
         
         self.centralManager.stopScan();
         
         peripheral.delegate = self;
-        
+        // 发现指定服务
         peripheral.discoverServices([CBUUID(string: Bluetooth.TRANSFER_SERVICE_UUID)]);
     }
     
-    // 连接失败
+    // step 3 连接失败
     func centralManager(central: CBCentralManager, didFailToConnectPeripheral peripheral: CBPeripheral, error: NSError?) {
         NSLog("didFailToConnectPeripheral:%@", peripheral);
         
@@ -161,9 +192,11 @@ extension CentralViewController:CBCentralManagerDelegate {
         }
         
         self.cleanup();
+        // 执行重连
+        self.startScan();
     }
     
-    // 断开连接
+    // step 4 断开连接
     func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
         NSLog("didDisconnectPeripheral: %@", peripheral);
         
@@ -210,8 +243,13 @@ extension CentralViewController:CBPeripheralDelegate {
         
         for characteristic in service.characteristics! {
             
-            if characteristic.UUID.isEqual(CBUUID(string: Bluetooth.TRANSFER_CHARACTERISTIC_UUID)) {/// 开始监听
+            NSLog("特征 properties: %d    %@", characteristic.properties.rawValue, characteristic);
+            if characteristic.UUID.isEqual(CBUUID(string: Bluetooth.TRANSFER_CHARACTERISTIC_UUID)) {
+                
+                self.writeCharacteristic = characteristic;
+                /// 开始监听
                 peripheral.setNotifyValue(true, forCharacteristic: characteristic);
+                // break;
             }
         }
     }
@@ -265,6 +303,7 @@ extension CentralViewController:CBPeripheralDelegate {
             self.data.appendData(data);
         }else if self.data.length == 0 {
             peripheral.setNotifyValue(false, forCharacteristic: characteristic);
+            NSLog("取消订阅: %@", "不是关心的订阅");
             return;
         }
         
@@ -284,11 +323,28 @@ extension CentralViewController:CBPeripheralDelegate {
             }
             
             peripheral.setNotifyValue(false, forCharacteristic: characteristic);
-            
             self.cleanup();
         }catch let error as NSError {
             NSLog("error: %@", error.description);
         }
+    }
+    
+    /// 向外发送数据
+    func peripheral(peripheral: CBPeripheral, didWriteValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
+        NSLog("didWriteValueForCharacteristic: %@", "");
+        if error != nil {
+            return;
+        }
+        
+        if characteristic.value == nil {
+            return;
+        }
+        
+        let mesg = String(data: characteristic.value!, encoding: NSUTF8StringEncoding);
+        if mesg != nil {
+            NSLog("发出的消息: %@", mesg!);
+        }
+        
     }
 
 }

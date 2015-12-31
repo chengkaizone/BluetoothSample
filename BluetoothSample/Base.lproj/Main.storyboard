@@ -24,7 +24,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Received text!" translatesAutoresizingMaskIntoConstraints="NO" id="LLG-oT-lZR">
-                                <rect key="frame" x="67" y="80.5" width="240" height="128"/>
+                                <rect key="frame" x="67" y="80" width="240" height="128"/>
                                 <color key="backgroundColor" red="0.30672303385360034" green="0.68533770483720247" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="128" id="wEY-6d-eSP"/>
@@ -41,11 +41,26 @@
                                     <action selector="resetAction" destination="BYZ-38-t0r" eventType="touchUpInside" id="iOt-YE-U4b"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qQe-N5-0Kb">
+                                <rect key="frame" x="155" y="229" width="65" height="30"/>
+                                <color key="backgroundColor" red="1" green="0.3232140691" blue="0.2038798362" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="65" id="1wc-CL-2kf"/>
+                                    <constraint firstAttribute="height" constant="30" id="Hbc-Vd-fiU"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <state key="normal" title="Send"/>
+                                <connections>
+                                    <action selector="sendData:" destination="BYZ-38-t0r" eventType="touchUpInside" id="sCj-dp-RYO"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="LLG-oT-lZR" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="5nZ-mj-M0Z"/>
+                            <constraint firstItem="qQe-N5-0Kb" firstAttribute="top" secondItem="LLG-oT-lZR" secondAttribute="bottom" constant="20.5" id="JWn-Nn-FKn"/>
                             <constraint firstItem="YAZ-e7-HD8" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="10" id="Rl6-e2-iCW"/>
+                            <constraint firstItem="qQe-N5-0Kb" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="cMj-6l-lvY"/>
                             <constraint firstItem="5QW-Tt-I1m" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="eyC-e8-Vn4"/>
                             <constraint firstAttribute="trailing" secondItem="YAZ-e7-HD8" secondAttribute="trailing" constant="10" id="fYc-zH-jZo"/>
                             <constraint firstItem="LLG-oT-lZR" firstAttribute="top" secondItem="5QW-Tt-I1m" secondAttribute="bottom" constant="20" id="fhj-rk-IhX"/>
